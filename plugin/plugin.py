@@ -29,20 +29,21 @@ from re import sub
 
 class OggiSportMain(Screen):
 	skin = """
-	<screen position="center,center" size="1000,600" title="Oggi Sport in Tv">
-		<widget source="list" render="Listbox" position="10,0" size="980,500" scrollbarMode="showOnDemand" >
+	<screen position="center,center" size="1040,620" title="Oggi Sport in Tv" flags="wfNoBorder" >
+		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/OggiSport/backg.png" position="0,0" size="1040,620"  />
+		<widget source="list" render="Listbox" position="40,100" size="960,420" scrollbarMode="showOnDemand" zPosition="1" transparent="1" >
 			<convert type="TemplatedMultiContent">
                 	{"template": [
                 	MultiContentEntryText(pos = (0, 0), size = (100, 30), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
                 	MultiContentEntryText(pos = (100, 0), size = (400, 30), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-			MultiContentEntryText(pos = (500, 0), size = (400, 30), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2),
+			MultiContentEntryText(pos = (554, 0), size = (400, 30), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2),
                 	],
                 	"fonts": [gFont("Regular", 22)],
                 	"itemHeight": 30
                 	}
             		</convert>
 		</widget>
-		<widget name="lab1" position="10,530" size="980,60" font="Regular;22" valign="center" halign="center" backgroundColor="blue" foregroundColor="#FFC000" shadowOffset="-2,-2" shadowColor="black" />
+		<widget name="lab1" position="10,530" size="980,60" font="Regular;22" valign="center" halign="center" foregroundColor="#FFC000" zPosition="1" transparent="1" />
 	</screen>"""
 	
 	def __init__(self, session):
@@ -125,4 +126,4 @@ def main(session, **kwargs):
 
 
 def Plugins(**kwargs):
-	return PluginDescriptor(name="OggiSport", description="Lo Sport di oggi in TV", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
+	return PluginDescriptor(name="OggiSport", description="Lo Sport di oggi in TV", icon="icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
