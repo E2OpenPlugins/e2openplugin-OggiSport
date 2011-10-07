@@ -10,5 +10,6 @@ setup (name = 'enigma2-plugin-extensions-oggisport',
        author='meo',
        author_email='lupomeo@hotmail.com',
        packages = [pkg],
-       package_dir = {pkg: 'plugin'}
+       package_dir = {pkg: 'plugin'},
+       package_data={pkg: ['*.png']}
       )
