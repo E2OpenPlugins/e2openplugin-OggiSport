@@ -26,6 +26,7 @@ from Tools.Directories import fileExists
 from os import system, remove as os_remove
 from enigma import eTimer
 from re import sub
+from urllib2 import Request, urlopen, URLError, HTTPError
 
 class OggiSportMain(Screen):
 	skin = """
@@ -77,41 +78,47 @@ class OggiSportMain(Screen):
 		self.updateInfo()
 		
 	def updateInfo(self):
-# Download and format html code
-		cmd = "wget -T 20 -O /tmp/oggisport.tmp http://tv.lospettacolo.it/sportintv.asp"
-		rc = system(cmd)
-		if fileExists("/tmp/oggisport.tmp"):
-			f = open("/tmp/oggisport.tmp",'r')
- 			for line in f.readlines():
-				if line.find('<center>') != -1:
-					break
-			line = line.replace('<tr>', '\n')
-			line = line.replace('</td><td>', '|')
-			line = line.replace('&nbsp;', ' ')
-			line = sub('<(.*?)>', '', line)
- 			f.close()
-			out = open("/tmp/oggisport.tmp", "w")
-			out.write(line)
-			out.close()
-# Build list
-			f = open("/tmp/oggisport.tmp",'r')
- 			for line in f.readlines():
-				if line[0] == 'S' or line[0] == '|':
-					continue
-				else:
-					parts = line.strip().split('|')
-					if len(parts) == 4:
-						res = (parts[0], parts[1], parts[2], parts[3])
-						self.list.append(res)
-
-			f.close()
-			self["list"].list = self.list
-			self.schanged()
-			os_remove("/tmp/oggisport.tmp")
+# Download html source
+		curchan = curtime = curevent = evextended = ""
+		step = 0
+		req = Request("http://tv.lospettacolo.it/sportintv.asp")
+		try:
+			response = urlopen(req, timeout = 10)
+		except HTTPError, e:
+    			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
+		except URLError, e:
+    			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
 		else:
-			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
+# funny parsing for funny source 			
+			for line in response.readlines():
+				line = line.strip()
+				if line.find('colwide tv_program_lists') != -1:
+					step = 1
+				if step == 3:
+					curevent = evextended = line
+					if len(evextended) > 20:
+						curevent = evextended[0:20] + "..." 
+					res = (curtime, curchan, curevent, evextended)
+					self.list.append(res)
+					step = 1	
+				if step == 0:
+					continue
+				if step == 2:
+					step = 3
+				if line.find('/pager') != -1:
+					break
+				elif line.find('title=') != -1:
+					parts = line.strip().split('"')
+					curchan = parts[3]
+				elif line.find("strong") != -1:
+					curtime = sub('<(.*?)>', '', line)
+					step = 2
+									
 			
-	
+			self["list"].list = sorted(self.list)
+			self.schanged()
+
+		
 	def schanged(self):
 		sel = self["list"].getCurrent()
 		if sel:
