@@ -44,7 +44,7 @@ class OggiSportMain(Screen):
                 	}
             		</convert>
 		</widget>
-		<widget name="lab1" position="10,530" size="980,60" font="Regular;22" valign="center" halign="center" foregroundColor="#FFC000" zPosition="1" transparent="1" />
+		<widget name="lab1" position="10,530" size="980,60" font="Regular;18" valign="center" halign="center" foregroundColor="#FFC000" zPosition="1" transparent="1" />
 	</screen>"""
 	
 	def __init__(self, session):
@@ -93,26 +93,35 @@ class OggiSportMain(Screen):
 			for line in response.readlines():
 				line = line.strip()
 				if line.find('colwide tv_program_lists') != -1:
-					step = 1
-				if step == 3:
-					curevent = evextended = line
-					if len(evextended) > 20:
-						curevent = evextended[0:20] + "..." 
-					res = (curtime, curchan, curevent, evextended)
-					self.list.append(res)
 					step = 1	
 				if step == 0:
 					continue
+				if step == 4:
+					if line.find('</div>') != -1:
+						evextended = sub('<(.*?)>', '', evextended)
+						res = (curtime, curchan, curevent, evextended)
+						self.list.append(res)
+						step = 1
+					else:
+						evextended += line.strip()
+				if step == 3:
+					if line.find('</p>') != -1:
+						step = 4
+					else:
+						curevent += line.strip()
 				if step == 2:
-					step = 3
+					if line.find('<strong>') != -1:
+						curtime = sub('<(.*?)>', '', line)
+						step = 3
 				if line.find('/pager') != -1:
 					break
-				elif line.find('title=') != -1:
+				if line.find('title=') != -1:
 					parts = line.strip().split('"')
-					curchan = parts[3]
-				elif line.find("strong") != -1:
-					curtime = sub('<(.*?)>', '', line)
-					step = 2
+					curchan = parts[5]
+				if step == 1:
+					if line.find('="program"') != -1:
+						curtime = curevent = evextended = ""
+						step = 2
 									
 			
 			self["list"].list = sorted(self.list)
