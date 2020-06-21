@@ -26,7 +26,10 @@ from Tools.Directories import fileExists
 from os import system, remove as os_remove
 from enigma import eTimer
 from re import sub
-from urllib2 import Request, urlopen, URLError, HTTPError
+
+from six.moves.urllib.error import URLError, HTTPError
+from six.moves.urllib.request import Request, urlopen
+
 
 class OggiSportMain(Screen):
 	skin = """
