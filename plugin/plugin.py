@@ -84,9 +84,9 @@ class OggiSportMain(Screen):
 		req = Request("http://tv.lospettacolo.it/sportintv.asp")
 		try:
 			response = urlopen(req, timeout = 10)
-		except HTTPError, e:
+		except HTTPError as e:
     			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
-		except URLError, e:
+		except URLError as e:
     			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
 		else:
 # funny parsing for funny source 			
