@@ -28,6 +28,7 @@ from enigma import eTimer
 from re import sub
 from urllib2 import Request, urlopen, URLError, HTTPError
 
+
 class OggiSportMain(Screen):
 	skin = """
 	<screen position="center,center" size="1040,620" title="Oggi Sport in Tv" flags="wfNoBorder" >
@@ -70,6 +71,7 @@ class OggiSportMain(Screen):
 
 
 #We use a timer to show the Window in the meanwhile we are connecting to web site
+
 	def startShow(self):
 		self.activityTimer.start(10)
 		
@@ -123,11 +125,9 @@ class OggiSportMain(Screen):
 						curtime = curevent = evextended = ""
 						step = 2
 									
-			
 			self["list"].list = sorted(self.list)
 			self.schanged()
 
-		
 	def schanged(self):
 		sel = self["list"].getCurrent()
 		if sel:
