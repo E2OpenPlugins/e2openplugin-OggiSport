@@ -1,12 +1,12 @@
 ##############################################################################
-#                         <<< Oggi Sport in Tv >>>                           
-#                                                                            
-#                      2011 meo <lupomeo@hotmail.com>          
-#                                                                            
-#  This file is open source software; you can redistribute it and/or modify  
-#     it under the terms of the GNU General Public License version 2 as      
-#               published by the Free Software Foundation.                   
-#                                                                            
+#                         <<< Oggi Sport in Tv >>>
+#
+#                      2011 meo <lupomeo@hotmail.com>
+#
+#  This file is open source software; you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License version 2 as
+#               published by the Free Software Foundation.
+#
 ##############################################################################
 #
 #
@@ -28,6 +28,7 @@ from enigma import eTimer
 from re import sub
 from urllib2 import Request, urlopen, URLError, HTTPError
 
+
 class OggiSportMain(Screen):
 	skin = """
 	<screen position="center,center" size="1040,620" title="Oggi Sport in Tv" flags="wfNoBorder" >
@@ -46,22 +47,22 @@ class OggiSportMain(Screen):
 		</widget>
 		<widget name="lab1" position="10,530" size="980,60" font="Regular;18" valign="center" halign="center" foregroundColor="#FFC000" zPosition="1" transparent="1" />
 	</screen>"""
-	
+
 	def __init__(self, session):
-		
+
 		Screen.__init__(self, session)
 
 		self.list = []
 		self["list"] = List(self.list)
 		self["lab1"] = Label("Attendere prego, connessione al server in corso...")
-		
+
 		self["actions"] = ActionMap(["WizardActions"],
 		{
 			"ok": self.close,
 			"back": self.close
 
 		})
-		
+
 		self["list"].onSelectionChanged.append(self.schanged)
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.startConnection)
@@ -70,30 +71,31 @@ class OggiSportMain(Screen):
 
 
 #We use a timer to show the Window in the meanwhile we are connecting to web site
+
 	def startShow(self):
 		self.activityTimer.start(10)
-		
+
 	def startConnection(self):
 		self.activityTimer.stop()
 		self.updateInfo()
-		
+
 	def updateInfo(self):
 # Download html source
 		curchan = curtime = curevent = evextended = ""
 		step = 0
 		req = Request("http://tv.lospettacolo.it/sportintv.asp")
 		try:
-			response = urlopen(req, timeout = 10)
+			response = urlopen(req, timeout=10)
 		except HTTPError, e:
     			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
 		except URLError, e:
     			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
 		else:
-# funny parsing for funny source 			
+# funny parsing for funny source
 			for line in response.readlines():
 				line = line.strip()
 				if line.find('colwide tv_program_lists') != -1:
-					step = 1	
+					step = 1
 				if step == 0:
 					continue
 				if step == 4:
@@ -122,24 +124,22 @@ class OggiSportMain(Screen):
 					if line.find('="program"') != -1:
 						curtime = curevent = evextended = ""
 						step = 2
-									
-			
+
 			self["list"].list = sorted(self.list)
 			self.schanged()
 
-		
 	def schanged(self):
 		sel = self["list"].getCurrent()
 		if sel:
 			self["lab1"].setText(sel[3])
-	
+
 	def delTimer(self):
-		del self.activityTimer	
+		del self.activityTimer
 
 
 def main(session, **kwargs):
-		session.open(OggiSportMain)	
+		session.open(OggiSportMain)
 
 
 def Plugins(**kwargs):
-	return PluginDescriptor(name="OggiSport", description="Lo Sport di oggi in TV", icon="icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
+	return PluginDescriptor(name="OggiSport", description="Lo Sport di oggi in TV", icon="icon.png", where=PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
