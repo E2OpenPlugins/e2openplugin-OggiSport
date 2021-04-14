@@ -83,7 +83,7 @@ class OggiSportMain(Screen):
 		step = 0
 		req = Request("http://tv.lospettacolo.it/sportintv.asp")
 		try:
-			response = urlopen(req, timeout = 10)
+			response = urlopen(req, timeout=10)
 		except HTTPError, e:
     			self.session.open(MessageBox, "Sorry. Website not available or connection refused.", MessageBox.TYPE_INFO)
 		except URLError, e:
@@ -142,4 +142,4 @@ def main(session, **kwargs):
 
 
 def Plugins(**kwargs):
-	return PluginDescriptor(name="OggiSport", description="Lo Sport di oggi in TV", icon="icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
+	return PluginDescriptor(name="OggiSport", description="Lo Sport di oggi in TV", icon="icon.png", where=PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
